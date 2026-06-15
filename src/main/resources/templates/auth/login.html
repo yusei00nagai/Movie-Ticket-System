@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン | 映画チケット予約</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>ログイン</h2>
+
+        <div th:if="${successMessage}" class="message-success">
+            <p th:text="${successMessage}" style="margin: 0;"></p>
+        </div>
+
+        <div th:if="${param.error}" class="message-error">
+            <p style="margin: 0;">メールアドレス、またはパスワードが違います。</p>
+        </div>
+        <div th:if="${param.logout}" class="message-success">
+            <p style="margin: 0;">ログアウトしました。</p>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div>
+                <label for="email">メールアドレス：</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="password">パスワード：</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">ログイン</button>
+        </form>
+
+        <p><a th:href="@{/register}">新規会員登録はこちら</a></p>
+    </div>
+</body>
+</html>

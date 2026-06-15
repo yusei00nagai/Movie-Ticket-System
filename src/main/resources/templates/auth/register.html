@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新規会員登録 | 映画チケット予約</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>新規会員登録</h2>
+        
+        <div th:if="${errorMessage}" class="message-error">
+            <p th:text="${errorMessage}" style="margin: 0;"></p>
+        </div>
+        
+        <form th:action="@{/register}" method="post">
+            <div>
+                <label for="name">お名前：</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">メールアドレス：</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="password">パスワード：</label>
+                <input type="password" id="password" name="rawPassword" required>
+            </div>
+            <button type="submit">登録する</button>
+        </form>
+        
+        <p><a th:href="@{/login}">すでにアカウントをお持ちの方はこちら（ログイン）</a></p>
+    </div>
+</body>
+</html>

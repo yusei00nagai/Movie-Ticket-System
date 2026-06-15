@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: Movie-Ticket-System
+
+  datasource:
+    # 使用するDBに合わせてURLを変更
+    url: jdbc:postgresql://localhost:5432/movie_ticket_app
+    username: mrs
+    password: mrs
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # Entityクラスからテーブルを自動生成・更新する設定
+      # 手動で作成したDBテーブルとEntityの整合性をチェックする
+      ddl-auto: validate
+    # 実行されたSQLをコンソールに表示（デバッグに必須）
+    #logging設定に一本化するのためにfalse
+    show-sql: false
+    properties:
+      hibernate:
+        # SQLを見やすく整形
+        format_sql: true
+
+  # スケジュール機能（1分間の仮押さえ解放）を有効にするための設定
+  task:
+    scheduling:
+      pool:
+        size: 1
+
+# ログレベルの設定（インデントに注意）
+logging:
+  level:
+    org:
+      hibernate:
+        # SQL文の表示
+        SQL: DEBUG
+        orm:
+          jdbc:
+            # パラメータ(?の中身)の表示
+            bind: TRACE
+
