@@ -1,1 +1,28 @@
 <!-- 一般画面の共通枠：Head/Header/Footer -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<header th:fragment="header" class="site-header">
+	    <div class="header-left"></div> <nav class="nav-links">
+	        <a th:href="@{/movies}" 
+	           th:classappend="${status != 'upcoming'} ? 'active-tab'">上映中</a>
+	        <a th:href="@{/movies(status='upcoming')}" 
+	           th:classappend="${status == 'upcoming'} ? 'active-tab'">公開予定</a>
+	        <a href="/theaters">劇場検索</a>
+	    </nav>
+
+		<div class="auth-buttons">
+		    <div sec:authorize="isAnonymous()">
+		        <a href="/login" class="btn-login">ログイン</a>
+		        <a href="/register" class="btn-register">新規登録</a>
+		    </div>
+
+		    <div sec:authorize="isAuthenticated()">
+		        <form th:action="@{/logout}" method="post" style="display: inline;">
+		            <button type="submit" class="btn-logout">ログアウト</button>
+		        </form>
+		    </div>
+		</div>
+	</header>
+</body>
+</html>

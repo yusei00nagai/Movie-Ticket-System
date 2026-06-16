@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${movie.title}">ダミータイトル</title>
+	<link rel="stylesheet" th:href="@{/css/user-layout.css}">
+	<link rel="stylesheet" th:href="@{/css/movies.css}">
+</head>
+<body>
+    
+    <div th:replace="~{layout/user-layout :: header}"></div>
+	
+	<main>
+		<div class="movie-detail-right">
+			<img th:src="@{/images/dummy.png}" alt="映画画像">
+			<h3 th:text="${movie.title}">ダミータイトル</h3>
+		</div>
+		<div class="movie-detail-left">
+			<img th:src="@{/images/dummy.png}" alt="サブ画像">
+<!--			<p th:text="${movie.description"}>ダミーあらすじ</p>-->
+<!--			<p th:text="${movie.title}">ダミータイトル<p>｜上映時間：<p th:text="${movie.duration}">ダミー上映時間<p></p></p></p>-->
+		</div>
+	</main>
+	
+	
+	
+	
+</body>
+</html>

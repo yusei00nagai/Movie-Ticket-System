@@ -21,7 +21,7 @@ public class UserController {
     // ① ログイン画面の表示
     // ==========================================
 	@GetMapping("/login")
-	public String showLoginForm( ) {
+	public String showLoginForm() {
 		return "auth/login";
 	}
 	
