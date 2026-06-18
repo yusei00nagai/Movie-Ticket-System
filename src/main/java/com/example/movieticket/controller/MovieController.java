@@ -1,6 +1,7 @@
 package com.example.movieticket.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -10,15 +11,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.movieticket.entity.Movie;
+import com.example.movieticket.entity.Theater;
 import com.example.movieticket.service.user.MovieService;
+import com.example.movieticket.service.user.TheaterService;
 
 @Controller
 public class MovieController {
 	
 	private final MovieService movieService;
+	private final TheaterService theaterService;
 	
-	public MovieController(MovieService movieService) {
+	public MovieController(MovieService movieService, TheaterService theaterService) {
 		this.movieService = movieService;
+		this.theaterService = theaterService;
 	}
 	
 	// ==========================================
@@ -54,15 +59,24 @@ public class MovieController {
 	// ==========================================
 	@GetMapping("/movies/{id}")
 	public String showMovieDetail(@PathVariable("id") Long id, Model model) {
+		
 	    //ServiceからIDをもとに映画を1件取得
 	    Optional<Movie> movieOpt = movieService.getMovieById(id);
 	    
 	    //存在チェック
 	    if(movieOpt.isPresent()) {
+	    	
 	        // 中身を取り出して "movie" という名前で渡す
 	        model.addAttribute("movie", movieOpt.get());
+	        
+	        //TheaterServiceから、劇場一覧を取得
+	        Map<String, List<Theater>> theaterMap = theaterService.getTheatersGroupedByArea();
+	        
+	        //劇場情報をmodeにセット
+	        model.addAttribute("theaterMap", theaterMap);
+	        
 	        return "movies/movie-detail";
-	    } else {
+	    } else {	
 	        //映画が見つからない場合、一覧画面へリダイレクト
 	        return "redirect:/movies";
 	    }

@@ -2,28 +2,113 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${movie.title}">ダミータイトル</title>
-	<link rel="stylesheet" th:href="@{/css/user-layout.css}">
-	<link rel="stylesheet" th:href="@{/css/movies.css}">
+    <title th:text="${movie.title}">映画詳細</title>
+    <link rel="stylesheet" th:href="@{/css/user-layout.css}">
+    <link rel="stylesheet" th:href="@{/css/movies.css}">
+    <!-- CSSは完成版のmovie-detail.cssを読み込みます（Eclipse上ではファイル名を合わせてください） -->
+    <link rel="stylesheet" th:href="@{/css/movie-detail.css}">
 </head>
 <body>
     
     <div th:replace="~{layout/user-layout :: header}"></div>
-	
-	<main>
-		<div class="movie-detail-right">
-			<img th:src="@{/images/dummy.png}" alt="映画画像">
-			<h3 th:text="${movie.title}">ダミータイトル</h3>
-		</div>
-		<div class="movie-detail-left">
-			<img th:src="@{/images/dummy.png}" alt="サブ画像">
-<!--			<p th:text="${movie.description"}>ダミーあらすじ</p>-->
-<!--			<p th:text="${movie.title}">ダミータイトル<p>｜上映時間：<p th:text="${movie.duration}">ダミー上映時間<p></p></p></p>-->
-		</div>
-	</main>
-	
-	
-	
-	
+    
+    <main>
+        <section class="movieSection">
+            <!-- ▼ 1. 上部：映画詳細情報（2カラム） ▼ -->
+            <div class="movie-detail-container">
+                
+                <!-- 左カラム：メイン画像とタイトル -->
+                <div class="left-col">
+                    <img th:src="@{/images/600x380.png}" alt="メイン画像" class="main-img">
+                    <h2 class="movie-title" th:text="${movie.title}">映画タイトル</h2>
+                </div>
+                
+                <!-- 右カラム：サブ画像とあらすじ・情報 -->
+                <div class="right-col">
+                    <!-- サブ画像4枚（クリックでモーダルを開く） -->
+                    <div class="sub-img-row">
+                        <img th:each="i : ${#numbers.sequence(1, 4)}"
+                             th:src="@{/images/600x380.png}" 
+                             alt="サブ画像"
+                             onclick="openModal(this.src)">
+                    </div>
+                    
+                    <p class="description" th:text="${movie.description}">
+                        映画のあらすじがここに入ります。
+                    </p>
+                    
+                    <!-- 上映時間の情報帯 -->
+                    <p class="movie-info-bar">
+                        上映時間：<span th:text="${movie.duration}">120</span>分
+                    </p>
+                </div>
+            </div>
+
+            <!-- ▼ 2. 下部：上映スケジュール（エリア別タブ＆劇場リスト） ▼ -->
+            <!-- インラインスタイルを排除し、CSSクラスを適用 -->
+            <div class="schedule-container">
+                
+                <h3>上映スケジュール</h3>
+                
+                <!-- ▼ エリア切り替えタブ（Thymeleafで動的生成） ▼ -->
+                <!-- Controllerから theaterMap (例: "東北" -> [劇場リスト]) が渡される想定 -->
+                <ul class="area-tabs" th:if="${theaterMap != null}">
+                    <!-- stat.first で最初の要素（北海道など）だけ初期状態でアクティブにする -->
+                    <!-- switchTabには 'area-0', 'area-1' のような動的IDを渡す -->
+                    <li th:each="areaEntry, stat : ${theaterMap}"
+                        th:class="${stat.first} ? 'active' : ''"
+                        th:onclick="|switchTab('area-${stat.index}', this)|"
+                        th:text="${areaEntry.key}">エリア名</li>
+                </ul>
+
+                <!-- ▼ 各エリアの劇場リスト（Thymeleafで動的生成） ▼ -->
+                <!-- タブと同じ順番でID（area-0, area-1...）を付与する -->
+                <div th:each="areaEntry, stat : ${theaterMap}"
+                     th:id="'area-' + ${stat.index}"
+                     class="theater-list-container"
+                     th:classappend="${stat.first} ? 'active' : ''">
+                    
+                    <!-- そのエリアに属する劇場をループで出力 -->
+                    <div th:each="theater : ${areaEntry.value}" class="theater-item">
+                        <!-- DBの location（都道府県）を出力 -->
+                        <div class="pref-name" th:text="'[' + ${theater.location} + ']'">[都道府県]</div>
+                        <div class="theater-name-row">
+                            <!-- DBの劇場名を出力 -->
+                            <span class="theater-name" th:text="${theater.name}">劇場名</span>
+                            <span class="arrow">∨</span>
+                        </div>
+                    </div>
+                    
+                    <!-- もしそのエリアに劇場が1件もなかった場合のメッセージ -->
+                    <!-- インラインスタイルを排除し、CSSクラスを適用 -->
+                    <div th:if="${#lists.isEmpty(areaEntry.value)}" class="theater-item empty-message">
+                        <span class="theater-name">このエリアでの上映スケジュールは現在ありません。</span>
+                    </div>
+                    
+                </div>
+
+                <!-- ▼ 3. ボタンエリア（レイアウト調整版） ▼ -->
+                <div class="btnArea">
+                    <div class="nowMovieArea">
+                        <a href="/movies">上映中作品一覧はこちら</a>
+                    </div>
+                    <div class="upcomingMovieArea">
+                        <a href="/movies?status=upcoming">公開予定作品一覧はこちら</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ▼ 画像拡大用のモーダル領域 ▼ -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="expandedImg">
+    </div>
+
+    <!-- JavaScript処理（外部ファイル読み込み） -->
+    <script th:src="@{/js/movie-detail.js}"></script>
+    
 </body>
 </html>

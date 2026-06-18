@@ -15,7 +15,7 @@
         
         <div class="movie-list">
             <a th:href="@{/movies/{id}(id=${movie.id})}" th:each="movie : ${movies}" class="movie-card">
-                <img th:src="@{/images/dummy.png}" alt="映画画像">
+                <img th:src="@{/images/600x380.png}" alt="映画画像">
                 <h2 th:text="${movie.title}">ダミータイトル</h2>
                 <p>公開日: <span th:text="${movie.releaseDate}">2000/01/01</span></p>
             </a>

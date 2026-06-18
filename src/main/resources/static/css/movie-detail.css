@@ -1,0 +1,385 @@
+/* 1. 画面全体を白っぽい色に */
+body {
+    background-color: #f4f4f4;
+    margin: 0; /* JSでoverflowを操作する際のズレ防止 */
+}
+
+/* 2. 映画詳細全体を囲むセクション（スケジュールエリアの背景は透明のまま維持） */
+.movieSection {
+    margin: 20px 0 50px 0; 
+    padding-top: 20px;
+    padding-bottom: 40px;
+    border-radius: 12px;
+}
+
+/* 3. 全体を包むカード（黒背景 ＋ CSSの影を応用したダークグレーの2層目 ＋ 深い影） */
+.movie-detail-container {
+    max-width: 1300px;
+    /* 外側に座布団が広がるため、周りのマージンをしっかり取る */
+    margin: 40px auto 60px auto; 
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    background-color: #222222; /* 1層目：黒系の背景 */
+    border: 1px solid #333333; /* うっすらとした境界線 */
+    border-radius: 12px;
+    padding: 40px;
+    
+    /* ▼ ここを追加：box-shadowで「色違いの座布団」と「本物の影」を同時に表現 ▼ */
+    box-shadow: 
+        0 0 0 25px #1a1a1a,             /* 2層目：若干色違いのダークグレーの余白 */
+        0 15px 40px 25px rgba(0,0,0,0.6); /* 3層目：全体を浮かび上がらせる深い影 */
+}
+
+/* =========================================
+   左カラム (メイン画像・タイトル)
+========================================= */
+.left-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.left-col .main-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+}
+
+/* 映画タイトル（白文字＋映画館の赤いシートのようなアクセント） */
+.movie-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff; /* 白文字 */
+    margin: 0;
+    border-bottom: 3px solid #b71c1c;
+    padding-bottom: 15px;
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   右カラム (サブ画像・詳細・情報)
+========================================= */
+.right-col {
+    display: flex;
+    flex-direction: column;
+}
+
+/* サブ画像4枚 */
+.sub-img-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px;
+    margin-top: 15px; /* 上部に少し余白を追加 */
+    margin-bottom: 30px;
+}
+
+.sub-img-row img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease; /* アニメーションの準備 */
+    cursor: pointer; /* クリックできることを示す指マーク */
+}
+
+/* 遊び心：画像にマウスを乗せると少し拡大する */
+.sub-img-row img:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+
+/* あらすじ（読みやすい明るいグレー） */
+.description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #eeeeee; 
+    margin: 0 0 30px 0;
+    flex-grow: 1; 
+    white-space: pre-wrap; /* DBの改行コードをそのまま画面の改行として反映させる */
+}
+
+/* 上映時間の情報帯（黒背景＋赤アクセント） */
+.movie-info-bar {
+    background-color: #111111; /* より深い黒 */
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 5px solid #b71c1c;
+    font-size: 1rem;
+    color: #eeeeee;
+    font-weight: bold;
+    margin: 0;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+}
+
+.movie-info-bar span {
+    color: #ffffff; /* 白で強調 */
+    font-weight: 900;
+}
+
+/* =========================================
+   上映スケジュールエリアの外枠
+========================================= */
+.schedule-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 10px 40px;
+}
+
+/* =========================================
+   上映スケジュール見出し
+========================================= */
+main h3 {
+    text-align: left;
+    border-left: 10px solid #b71c1c;
+    padding-left: 10px;
+    color: #333333; /* 背景色が明るくなったので黒系の文字に変更 */
+    margin-top: 60px; /* 上部の詳細カードとの間に余白を確保 */
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   エリア別タブ（ulタグの横並び）
+========================================= */
+/* タブの大枠 */
+.area-tabs {
+    display: flex; /* ここで横一列に並べる */
+    list-style: none; /* ・のポッチを消す */
+    padding: 0;
+    margin: 0;
+    background-color: #222222; /* 添付画像通りの黒背景 */
+    border-radius: 8px 8px 0 0; /* 上の角だけ少し丸める */
+}
+
+/* 各タブ（北海道、東北など） */
+.area-tabs li {
+    flex: 1; /* 幅を均等に分ける */
+    text-align: center;
+    padding: 15px 0;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border-right: 1px solid #444444; /* 区切り線 */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* 一番右のタブは区切り線を消す */
+.area-tabs li:last-child {
+    border-right: none;
+}
+
+/* タブをホバーした時 */
+.area-tabs li:hover {
+    background-color: #444444;
+}
+
+/* ★現在選択されているタブ（白背景に黒文字） */
+.area-tabs li.active {
+    background-color: #f8f9fa; /* 画像に合わせた白っぽい背景 */
+    color: #000000;
+    border-radius: 8px 8px 0 0; /* 角丸を引き継ぐ */
+}
+
+/* =========================================
+   劇場リストエリア（タブの下に表示される部分）
+========================================= */
+/* 劇場リストを包む箱 */
+.theater-list-container {
+    background-color: #f8f9fa; /* アクティブなタブの色と繋げる */
+    padding: 0 30px;
+    display: none; /* 初期状態では隠しておく（JSで表示切り替え） */
+    border-radius: 0 0 8px 8px; /* 下の角だけ丸める */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    
+    /* ▼ 今回の修正箇所：タブ切り替え時のガタつき（画面のズレ）防止 ▼ */
+    min-height: 400px; /* 件数が少なくてもこの高さは絶対にキープする */
+    max-height: 500px; /* もし件数が多すぎる場合は、この高さでストップ */
+    overflow-y: auto;  /* はみ出した分は、この箱の中だけでスクロールさせる */
+}
+
+/* アクティブなエリアのリストだけを表示する（JSのクラス操作と連動） */
+.theater-list-container.active {
+    display: block;
+}
+
+/* 劇場ごとの行 */
+.theater-item {
+    border-bottom: 1px solid #dddddd;
+    padding: 20px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.2s;
+}
+
+/* 最後の行は線を消す */
+.theater-item:last-child {
+    border-bottom: none;
+}
+
+/* 行をホバーした時 */
+.theater-item:hover {
+    background-color: #e9ecef;
+}
+
+/* [青森県] などの都道府県名 */
+.theater-item .pref-name {
+    font-size: 0.9rem;
+    color: #555555;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* 劇場名と右側の矢印を横並びにする枠 */
+.theater-item .theater-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* TOHOシネマズ 仙台 などの劇場名 */
+.theater-item .theater-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #111111;
+}
+
+/* 右側の矢印アイコン（∨） */
+.theater-item .arrow {
+    color: #888888;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 劇場が0件の場合のメッセージ */
+.empty-message {
+    text-align: center;
+    color: #888888;
+    padding: 40px 0;
+    cursor: default;
+}
+
+.empty-message:hover {
+    background-color: transparent;
+}
+
+/* =========================================
+   ボタンエリア (ホバー調整版)
+========================================= */
+.btnArea {
+    margin: 80px 0 40px 0;
+    display: flex;           /* ボタンを横並びにする */
+    justify-content: center; /* 中央に寄せる */
+    gap: 30px;               /* ボタン同士の隙間 */
+    flex-wrap: wrap;         /* 画面が狭いときは自動で縦並びに折り返す */
+}
+
+/* div側の余白や背景色はリセットし、aタグにすべて任せる */
+.nowMovieArea, .upcomingMovieArea {
+    margin: 0;
+    padding: 0;
+}
+
+/* ボタン（aタグ）自体のデザイン */
+.btnArea a {
+    display: inline-block; /* ボタンの形を作るための必須設定 */
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #b71c1c; /* シネマレッド */
+    text-decoration: none;
+    padding: 18px 50px;
+    border-radius: 50px; /* 角を大きく丸くしてモダンに */
+    transition: all 0.3s ease; /* ホバー時のアニメーション時間 */
+    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.4); /* うっすら赤い影を落とす */
+}
+
+/* ★ホバー時の動き（マウスが乗った時） */
+.btnArea a:hover {
+    background-color: #d32f2f; /* 色を少し明るく発光させる */
+    transform: translateY(-4px); /* フワッと上に浮き上がる */
+    box-shadow: 0 8px 25px rgba(183, 28, 28, 0.6); /* 影を濃く、広くする */
+}
+
+/* ★クリックした瞬間の動き（押し込み感） */
+.btnArea a:active {
+    transform: translateY(0); /* 浮いた状態から元の位置に戻る */
+    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.4); /* 影を小さくする */
+}
+
+/* =========================================
+   画像拡大用モーダル (ポップアップ)
+========================================= */
+.modal {
+    display: none; /* 初期状態は非表示 */
+    position: fixed;
+    z-index: 1000; /* ヘッダー等より手前に出す */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* 半透明の黒背景 */
+    
+    /* モーダルの中身（画像）を画面中央に配置 */
+    justify-content: center;
+    align-items: center;
+    
+    /* 背景をすっと表示させる */
+    animation: smoothFade 0.4s ease forwards;
+}
+
+/* 拡大画像 */
+.modal-content {
+    max-width: 90%;
+    max-height: 90vh; /* 画面の高さを超えないように */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    
+    /* ズームを消し、純粋なフェードイン（透明→不透明）だけにする */
+    animation: smoothFade 0.4s ease forwards; 
+}
+
+/* すっと浮かび上がるフェードインのアニメーション定義 */
+@keyframes smoothFade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* 閉じるボタン（右上の×マーク） */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #b71c1c; /* ホバーでシネマレッドに */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* =========================================
+   共通ヘッダーの上書き（映画詳細画面専用）
+========================================= */
+/* 詳細画面では「上映中」タブのアクティブ色を強制的に無効化する */
+.site-header .nav-links a.active-tab {
+    background-color: transparent !important;
+    color: #333 !important;
+    font-weight: normal !important;
+}
+
+/* ホバー時の色は通常リンクと同じに戻す */
+.site-header .nav-links a.active-tab:hover {
+    background-color: #E2E6EA !important; 
+}

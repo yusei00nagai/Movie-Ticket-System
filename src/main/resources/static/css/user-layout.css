@@ -1,3 +1,9 @@
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    /* bodyの背景色は各画面のCSS（movies.cssやmovie-detail.css）で設定される前提です */
+}
+
 /* ヘッダーの配置と背景 */
 .site-header {
     position: fixed;
@@ -48,8 +54,9 @@
     background-color: #E2E6EA;
 }
 
+/* 現在選択中のタブ（シックな赤色に変更） */
 .nav-links a.active-tab {
-    background-color: #007BFF;
+    background-color: #b71c1c; 
     color: white;
     font-weight: bold;
 }
@@ -89,9 +96,12 @@
     cursor: pointer;
     padding: 8px 16px;
     font-family: inherit;
-    transition: color 0.3s;
+    transition: color 0.3s, background-color 0.3s;
 }
 
+/* ログアウトボタンホバー時（青色からシネマレッドに変更） */
 .btn-logout:hover {
-    color: #007BFF;
+    color: #E50914; 
+    background-color: #F8D7DA; /* 薄い赤の背景をつけて押しやすく */
+    border-radius: 20px;
 }
