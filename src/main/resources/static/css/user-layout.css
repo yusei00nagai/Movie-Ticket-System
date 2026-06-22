@@ -1,3 +1,7 @@
+/* =========================================
+   ユーザー画面共通レイアウト
+========================================= */
+
 body {
     margin: 0;
     font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
@@ -27,13 +31,169 @@ body {
     align-items: center;
 }
 
+/* =========================================
+   ハンバーガーメニュー & ロゴ (今回追加部分)
+========================================= */
+.header-left {
+    gap: 20px; /* メニューとロゴの間の隙間 */
+}
+
+/* ハンバーガーアイコン */
+.hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.hamburger-menu:hover {
+    transform: scale(1.1); /* マウスオーバーで少し大きく */
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #333333;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* ロゴデザイン */
+.site-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #b71c1c; /* シネマレッド */
+    font-size: 1.5rem;
+    font-weight: bold;
+    gap: 8px; /* アイコンと文字の隙間 */
+    transition: transform 0.2s ease;
+}
+
+.site-logo:hover {
+    transform: scale(1.05); /* クリックできそうな浮き上がり効果 */
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+}
+
+/* =========================================
+   サイドメニュー (今回追加部分)
+========================================= */
+/* サイドメニュー本体（初期状態は画面の左外に隠しておく） */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px; /* 幅と同じ分だけ左にずらして隠す */
+    width: 300px;
+    height: 100vh;
+    background-color: #222222; /* シネマティックな黒背景 */
+    color: #ffffff;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+    transition: left 0.3s ease; /* スッと出てくるアニメーション */
+    z-index: 2000; /* 常に最前面 */
+}
+
+/* JSでこのクラスが付与されると画面内にスライドインする */
+.side-menu.open {
+    left: 0; 
+}
+
+/* サイドメニューのヘッダー部分 */
+.side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #444444;
+}
+
+.side-menu-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #b71c1c;
+    letter-spacing: 1px;
+}
+
+/* 閉じる（×）ボタン */
+.close-menu {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 2.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+}
+
+.close-menu:hover {
+    color: #b71c1c;
+}
+
+/* サイドメニューのリスト */
+.side-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-menu-list li {
+    border-bottom: 1px solid #333333;
+}
+
+.side-menu-list a {
+    display: block;
+    padding: 20px 30px;
+    color: #dddddd;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.2s, padding-left 0.2s;
+}
+
+/* マウスオーバー時に少し右にスライドして背景色が変わる */
+.side-menu-list a:hover {
+    background-color: #333333;
+    color: #ffffff;
+    padding-left: 40px; 
+}
+
+/* 背景を暗くする幕（オーバーレイ） */
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1999; /* サイドメニューの1つ下 */
+}
+
+/* JSでこのクラスが付与されると幕が表示される */
+.side-menu-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =========================================
+   ナビゲーション・ボタン（既存部分）
+========================================= */
 .auth-buttons {
     justify-content: flex-end;
     gap: 15px;
     white-space: nowrap;
 }
 
-/* ナビゲーション */
 .nav-links {
     flex: 2;
     display: flex;
@@ -54,14 +214,12 @@ body {
     background-color: #E2E6EA;
 }
 
-/* 現在選択中のタブ（シックな赤色に変更） */
 .nav-links a.active-tab {
     background-color: #b71c1c; 
     color: white;
     font-weight: bold;
 }
 
-/* ボタン類 */
 .btn-login {
     background-color: rgb(70, 70, 70);
     color: white;
@@ -99,9 +257,8 @@ body {
     transition: color 0.3s, background-color 0.3s;
 }
 
-/* ログアウトボタンホバー時（青色からシネマレッドに変更） */
 .btn-logout:hover {
     color: #E50914; 
-    background-color: #F8D7DA; /* 薄い赤の背景をつけて押しやすく */
+    background-color: #F8D7DA;
     border-radius: 20px;
 }

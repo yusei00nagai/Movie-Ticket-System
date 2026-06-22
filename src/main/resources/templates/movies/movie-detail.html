@@ -5,12 +5,12 @@
     <title th:text="${movie.title}">映画詳細</title>
     <link rel="stylesheet" th:href="@{/css/user-layout.css}">
     <link rel="stylesheet" th:href="@{/css/movies.css}">
-    <!-- CSSは完成版のmovie-detail.cssを読み込みます（Eclipse上ではファイル名を合わせてください） -->
+    <!-- CSSは完成版のmovie-detail.cssを読み込みます -->
     <link rel="stylesheet" th:href="@{/css/movie-detail.css}">
 </head>
 <body>
     
-    <div th:replace="~{layout/user-layout :: header}"></div>
+    <div th:replace="~{layout/user-layout :: header('movie-detail')}"></div>
     
     <main>
         <section class="movieSection">
@@ -25,12 +25,12 @@
                 
                 <!-- 右カラム：サブ画像とあらすじ・情報 -->
                 <div class="right-col">
-                    <!-- サブ画像4枚（クリックでモーダルを開く） -->
+                    <!-- サブ画像4枚（クラスを付与しJSで制御） -->
                     <div class="sub-img-row">
                         <img th:each="i : ${#numbers.sequence(1, 4)}"
                              th:src="@{/images/600x380.png}" 
                              alt="サブ画像"
-                             onclick="openModal(this.src)">
+                             class="sub-img">
                     </div>
                     
                     <p class="description" th:text="${movie.description}">
@@ -45,24 +45,20 @@
             </div>
 
             <!-- ▼ 2. 下部：上映スケジュール（エリア別タブ＆劇場リスト） ▼ -->
-            <!-- インラインスタイルを排除し、CSSクラスを適用 -->
             <div class="schedule-container">
                 
                 <h3>上映スケジュール</h3>
                 
-                <!-- ▼ エリア切り替えタブ（Thymeleafで動的生成） ▼ -->
-                <!-- Controllerから theaterMap (例: "東北" -> [劇場リスト]) が渡される想定 -->
+                <!-- ▼ エリア切り替えタブ ▼ -->
+                <!-- JS識別のためのクラスと data-area-id を付与 -->
                 <ul class="area-tabs" th:if="${theaterMap != null}">
-                    <!-- stat.first で最初の要素（北海道など）だけ初期状態でアクティブにする -->
-                    <!-- switchTabには 'area-0', 'area-1' のような動的IDを渡す -->
                     <li th:each="areaEntry, stat : ${theaterMap}"
-                        th:class="${stat.first} ? 'active' : ''"
-                        th:onclick="|switchTab('area-${stat.index}', this)|"
+                        th:classappend="${stat.first} ? 'active area-tab' : 'area-tab'"
+                        th:data-area-id="'area-' + ${stat.index}"
                         th:text="${areaEntry.key}">エリア名</li>
                 </ul>
 
-                <!-- ▼ 各エリアの劇場リスト（Thymeleafで動的生成） ▼ -->
-                <!-- タブと同じ順番でID（area-0, area-1...）を付与する -->
+                <!-- ▼ 各エリアの劇場リスト ▼ -->
                 <div th:each="areaEntry, stat : ${theaterMap}"
                      th:id="'area-' + ${stat.index}"
                      class="theater-list-container"
@@ -70,24 +66,75 @@
                     
                     <!-- そのエリアに属する劇場をループで出力 -->
                     <div th:each="theater : ${areaEntry.value}" class="theater-item">
-                        <!-- DBの location（都道府県）を出力 -->
+                        
+                        <!-- 都道府県 -->
                         <div class="pref-name" th:text="'[' + ${theater.location} + ']'">[都道府県]</div>
+                        
+                        <!-- 劇場名と矢印 -->
                         <div class="theater-name-row">
-                            <!-- DBの劇場名を出力 -->
                             <span class="theater-name" th:text="${theater.name}">劇場名</span>
-                            <span class="arrow">∨</span>
+                            <span class="arrow">▼</span>
                         </div>
+                        
+                        <!-- ▼ アコーディオンで開くカレンダー部分 ▼ -->
+                        <div class="accordion-content">
+                            
+                            <!-- 日付タブ (JS識別のためのクラスと data-target-date を付与) -->
+                            <ul class="date-tabs">
+                                <li class="date-tab active" th:data-target-date="'date-1-' + ${theater.id}">
+                                    <span class="month-day">6/19</span>
+                                    <span class="day-of-week">(金)</span>
+                                </li>
+                                <li class="date-tab" th:data-target-date="'date-2-' + ${theater.id}">
+                                    <span class="month-day">6/20</span>
+                                    <span class="day-of-week">(土)</span>
+                                </li>
+                            </ul>
+
+                            <!-- タイムテーブル領域 -->
+                            <div class="timetable-wrapper">
+                                <!-- 6/19用のスケジュール -->
+                                <div th:id="'date-1-' + ${theater.id}" class="timetable-panel active">
+                                    <p class="timetable-note">※座席を選択するには時間枠をクリックしてください。</p>
+                                    <div class="time-box-list">
+                                        <a href="/reservations/seat?showtimeId=1" class="time-box ok">
+                                            <span class="time">10:00 ~ 12:00</span>
+                                            <span class="screen">Screen 1</span>
+                                            <span class="status-mark">〇</span>
+                                        </a>
+                                        <a href="/reservations/seat?showtimeId=2" class="time-box few">
+                                            <span class="time">13:30 ~ 15:30</span>
+                                            <span class="screen">Screen 3</span>
+                                            <span class="status-mark">△</span>
+                                        </a>
+                                        <div class="time-box full">
+                                            <span class="time">19:00 ~ 21:00</span>
+                                            <span class="screen">Screen 2</span>
+                                            <span class="status-mark">×</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 6/20用のスケジュール -->
+                                <div th:id="'date-2-' + ${theater.id}" class="timetable-panel">
+                                    <div class="time-box-list empty-message">
+                                        <p>この日の上映スケジュールはありません。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- アコーディオンここまで -->
+                        
                     </div>
                     
-                    <!-- もしそのエリアに劇場が1件もなかった場合のメッセージ -->
-                    <!-- インラインスタイルを排除し、CSSクラスを適用 -->
+                    <!-- 劇場が0件の場合のメッセージ -->
                     <div th:if="${#lists.isEmpty(areaEntry.value)}" class="theater-item empty-message">
                         <span class="theater-name">このエリアでの上映スケジュールは現在ありません。</span>
                     </div>
                     
                 </div>
 
-                <!-- ▼ 3. ボタンエリア（レイアウト調整版） ▼ -->
+                <!-- ▼ 3. ボタンエリア ▼ -->
                 <div class="btnArea">
                     <div class="nowMovieArea">
                         <a href="/movies">上映中作品一覧はこちら</a>
@@ -102,13 +149,17 @@
     </main>
 
     <!-- ▼ 画像拡大用のモーダル領域 ▼ -->
-    <div id="imageModal" class="modal" onclick="closeModal()">
+    <div id="imageModal" class="modal">
         <span class="close-btn">&times;</span>
         <img class="modal-content" id="expandedImg">
     </div>
 
-    <!-- JavaScript処理（外部ファイル読み込み） -->
-    <script th:src="@{/js/movie-detail.js}"></script>
+    <!-- ▼ ページトップへ戻るボタン ▼ -->
+    <!-- スクロール検知やクリック処理は完全にJSファイル側で制御します -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="ページトップへ戻る">▲</button>
+
+    <!-- JavaScript処理（キャッシュ対策パラメータ） -->
+    <script th:src="@{/js/movie-detail.js?v=7}"></script>
     
 </body>
 </html>

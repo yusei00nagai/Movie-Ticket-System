@@ -22,7 +22,7 @@ public class TheaterService {
 	}
 	
 	// ==========================================
-	// ① 劇場のエリア割り振り
+	// ① 劇場のエリア割り振りメソッド
 	// ==========================================
 	public Map<String, List<Theater>> getTheatersGroupedByArea() {
 		

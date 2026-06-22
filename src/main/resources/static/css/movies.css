@@ -18,6 +18,7 @@ main {
 main h1 {
     text-align: left;
 	border-left: 10px solid #b71c1c;
+	padding-left: 10px;
 }
 
 /* 映画リスト */
