@@ -2,14 +2,21 @@ package com.example.movieticket.service.user;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
 import com.example.movieticket.dto.DateTabDto;
+import com.example.movieticket.dto.TheaterScheduleDto;
+import com.example.movieticket.dto.TimeSlotDto;
+import com.example.movieticket.entity.Showtime;
+import com.example.movieticket.entity.Theater;
 import com.example.movieticket.repository.ShowtimeRepository;
 
 @Service
@@ -59,5 +66,129 @@ public class ShowtimeService {
 		.collect(Collectors.toList());
 		
 		return tabs;
+	}
+	
+	// ==========================================
+	// ② 特定映画の上映スケジュール仕分けメソッド
+	// ==========================================
+	public Map<String, List<TheaterScheduleDto>> getScheduleMapByMovie(Long movieId) {
+		
+		//Map箱を用意
+		Map<String, List<TheaterScheduleDto>> targetShowtimes = new LinkedHashMap<>();
+		//キー：空Listを用意
+		targetShowtimes.put("北海道", new ArrayList<>());
+		targetShowtimes.put("東北", new ArrayList<>());
+		targetShowtimes.put("関東", new ArrayList<>());
+		targetShowtimes.put("中部", new ArrayList<>());
+		targetShowtimes.put("関西", new ArrayList<>());
+		targetShowtimes.put("中国", new ArrayList<>());
+		targetShowtimes.put("四国", new ArrayList<>());
+		targetShowtimes.put("九州", new ArrayList<>());
+		
+		//今日の日付を取得
+		LocalDate today = LocalDate.now();
+		//今日から6日後の日付
+		LocalDate endDay = today.plusDays(6);
+		
+		//特定映画の上映スケジュールを全件取得
+		List<Showtime> showtimes = showtimeRepository.findByMovieId(movieId);
+		
+		for(Showtime showtime : showtimes) {
+			
+			LocalDate targetDate = showtime.getStartTime().toLocalDate();
+			
+			//期間外であれば、スキップ
+			if(targetDate.isBefore(today) || targetDate.isAfter(endDay)) {
+				continue;
+			}
+			
+			//エリア名の判定
+			String areaName = "";
+			switch (showtime.getScreen().getTheater().getArea()) {
+				case 1:
+					areaName = "北海道";
+					break;
+				case 2:
+					areaName = "東北";
+					break;
+				case 3:
+					areaName = "関東";
+					break;
+				case 4:
+					areaName = "中部";
+					break;
+				case 5:
+					areaName = "関西";
+					break;
+				case 6:
+					areaName = "中国";
+					break;
+				case 7:
+					areaName = "四国";
+					break;
+				case 8:
+					areaName = "九州";
+					break;
+			}
+			
+			//保険：エリア名が取得できなかったらスキップ
+			if(areaName.isEmpty()) {
+				continue;
+			}
+			
+			//マトリョーシカの組み立て
+			//手順１ 一番小さな時間箱(TimeSlotDto)を作成
+			TimeSlotDto timeSlot = new TimeSlotDto();
+			
+			//作成した時間箱に値を格納
+			//showtimeIdをセット
+			timeSlot.setShowtimeId(showtime.getId());
+			
+			//timeRangeをセット
+			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+			timeSlot.setTimeRange(showtime.getStartTime().format(timeFormatter) + "～" + showtime.getEndTime().format(timeFormatter));
+			timeSlot.setScreenName(showtime.getScreen().getName());
+			
+			//statusMark, statusCssをセット 残席情報は一旦仮置き
+			timeSlot.setStatusMark("〇");
+			timeSlot.setStatusCss("ok");
+			
+			//手順２ 大きな箱から、該当エリアの「劇場箱リスト」を取り出す
+			List<TheaterScheduleDto> theaterList = targetShowtimes.get(areaName);
+			
+			//手順３ リストの中に、今回の劇場箱があるかをチェック
+			Theater theater = showtime.getScreen().getTheater();
+			TheaterScheduleDto targetTheaterDto = null;
+			for(TheaterScheduleDto dto : theaterList) {
+				if(dto.getTheaterId().equals(theater.getId())) {
+					targetTheaterDto = dto;
+					break;
+				}
+			}
+			
+			//手順４ 劇場箱がまだ存在しない場合、新しく作成し、エリアリストに追加
+			if(targetTheaterDto == null) {
+				targetTheaterDto = new TheaterScheduleDto();
+				
+				//targetTheaterDtoにTheater情報を詰める
+				targetTheaterDto.setTheaterId(theater.getId());
+				targetTheaterDto.setTheaterName(theater.getName());
+				targetTheaterDto.setLocation(theater.getLocation());
+				//空の日付マップを作成
+				targetTheaterDto.setDailySchedules(new java.util.TreeMap<>());
+				
+				theaterList.add(targetTheaterDto);
+			}
+			
+			//手順５ 劇場箱の日付カレンダーを開き、手順１で作成した時間枠箱を追加
+			//対象の日付リストがなければ作成
+			if(!targetTheaterDto.getDailySchedules().containsKey(targetDate)) {
+				targetTheaterDto.getDailySchedules().put(targetDate, new ArrayList<>());
+			}
+			
+			//リストに時間枠箱を追加
+			targetTheaterDto.getDailySchedules().get(targetDate).add(timeSlot);
+		}
+		return targetShowtimes;
 	}
 }

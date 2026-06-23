@@ -10,20 +10,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.movieticket.dto.TheaterScheduleDto;
 import com.example.movieticket.entity.Movie;
-import com.example.movieticket.entity.Theater;
 import com.example.movieticket.service.user.MovieService;
-import com.example.movieticket.service.user.TheaterService;
+import com.example.movieticket.service.user.ShowtimeService;
 
 @Controller
 public class MovieController {
 	
 	private final MovieService movieService;
-	private final TheaterService theaterService;
+	private final ShowtimeService showtimeService;
 	
-	public MovieController(MovieService movieService, TheaterService theaterService) {
+	public MovieController(MovieService movieService, ShowtimeService showtimeService) {
 		this.movieService = movieService;
-		this.theaterService = theaterService;
+		this.showtimeService = showtimeService;
+		
 	}
 	
 	// ==========================================
@@ -70,7 +71,7 @@ public class MovieController {
 	        model.addAttribute("movie", movieOpt.get());
 	        
 	        //TheaterServiceから、劇場一覧を取得
-	        Map<String, List<Theater>> theaterMap = theaterService.getTheatersGroupedByArea();
+	        Map<String, List<TheaterScheduleDto>> theaterMap = showtimeService.getScheduleMapByMovie(id);
 	        
 	        //劇場情報をmodeにセット
 	        model.addAttribute("theaterMap", theaterMap);

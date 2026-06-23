@@ -5,7 +5,6 @@
     <title th:text="${movie.title}">映画詳細</title>
     <link rel="stylesheet" th:href="@{/css/user-layout.css}">
     <link rel="stylesheet" th:href="@{/css/movies.css}">
-    <!-- CSSは完成版のmovie-detail.cssを読み込みます -->
     <link rel="stylesheet" th:href="@{/css/movie-detail.css}">
 </head>
 <body>
@@ -25,7 +24,6 @@
                 
                 <!-- 右カラム：サブ画像とあらすじ・情報 -->
                 <div class="right-col">
-                    <!-- サブ画像4枚（クラスを付与しJSで制御） -->
                     <div class="sub-img-row">
                         <img th:each="i : ${#numbers.sequence(1, 4)}"
                              th:src="@{/images/600x380.png}" 
@@ -37,7 +35,6 @@
                         映画のあらすじがここに入ります。
                     </p>
                     
-                    <!-- 上映時間の情報帯 -->
                     <p class="movie-info-bar">
                         上映時間：<span th:text="${movie.duration}">120</span>分
                     </p>
@@ -50,7 +47,6 @@
                 <h3>上映スケジュール</h3>
                 
                 <!-- ▼ エリア切り替えタブ ▼ -->
-                <!-- JS識別のためのクラスと data-area-id を付与 -->
                 <ul class="area-tabs" th:if="${theaterMap != null}">
                     <li th:each="areaEntry, stat : ${theaterMap}"
                         th:classappend="${stat.first} ? 'active area-tab' : 'area-tab'"
@@ -67,67 +63,63 @@
                     <!-- そのエリアに属する劇場をループで出力 -->
                     <div th:each="theater : ${areaEntry.value}" class="theater-item">
                         
-                        <!-- 都道府県 -->
                         <div class="pref-name" th:text="'[' + ${theater.location} + ']'">[都道府県]</div>
                         
                         <!-- 劇場名と矢印 -->
                         <div class="theater-name-row">
-                            <span class="theater-name" th:text="${theater.name}">劇場名</span>
+                            <span class="theater-name" th:text="${theater.theaterName}">劇場名</span>
                             <span class="arrow">▼</span>
                         </div>
                         
                         <!-- ▼ アコーディオンで開くカレンダー部分 ▼ -->
                         <div class="accordion-content">
                             
-                            <!-- 日付タブ (JS識別のためのクラスと data-target-date を付与) -->
+                            <!-- 日付タブのループ -->
                             <ul class="date-tabs">
-                                <li class="date-tab active" th:data-target-date="'date-1-' + ${theater.id}">
-                                    <span class="month-day">6/19</span>
-                                    <span class="day-of-week">(金)</span>
-                                </li>
-                                <li class="date-tab" th:data-target-date="'date-2-' + ${theater.id}">
-                                    <span class="month-day">6/20</span>
-                                    <span class="day-of-week">(土)</span>
+                                <!-- theater.dailySchedules (Map) をループして日付タブを作る -->
+                                <li th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
+                                    th:classappend="${dateStat.first} ? 'date-tab active' : 'date-tab'"
+                                    th:data-target-date="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}">
+                                    
+                                    <!-- LocalDate を Thymeleaf の機能で「M/d」形式に変換 -->
+                                    <span class="month-day" th:text="${#temporals.format(scheduleEntry.key, 'M/d')}">6/19</span>
+                                    <span class="day-of-week" th:text="${#temporals.format(scheduleEntry.key, '(E)', new java.util.Locale('ja', 'JP'))}">(金)</span>
                                 </li>
                             </ul>
 
                             <!-- タイムテーブル領域 -->
                             <div class="timetable-wrapper">
-                                <!-- 6/19用のスケジュール -->
-                                <div th:id="'date-1-' + ${theater.id}" class="timetable-panel active">
-                                    <p class="timetable-note">※座席を選択するには時間枠をクリックしてください。</p>
-                                    <div class="time-box-list">
-                                        <a href="/reservations/seat?showtimeId=1" class="time-box ok">
-                                            <span class="time">10:00 ~ 12:00</span>
-                                            <span class="screen">Screen 1</span>
-                                            <span class="status-mark">〇</span>
-                                        </a>
-                                        <a href="/reservations/seat?showtimeId=2" class="time-box few">
-                                            <span class="time">13:30 ~ 15:30</span>
-                                            <span class="screen">Screen 3</span>
-                                            <span class="status-mark">△</span>
-                                        </a>
-                                        <div class="time-box full">
-                                            <span class="time">19:00 ~ 21:00</span>
-                                            <span class="screen">Screen 2</span>
-                                            <span class="status-mark">×</span>
-                                        </div>
-                                    </div>
-                                </div>
                                 
-                                <!-- 6/20用のスケジュール -->
-                                <div th:id="'date-2-' + ${theater.id}" class="timetable-panel">
-                                    <div class="time-box-list empty-message">
+                                <!-- 日付ごとのスケジュール枠のループ -->
+                                <div th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
+                                     th:id="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}"
+                                     th:classappend="${dateStat.first} ? 'timetable-panel active' : 'timetable-panel'">
+                                     
+                                    <p class="timetable-note" th:if="${not #lists.isEmpty(scheduleEntry.value)}">※座席を選択するには時間枠をクリックしてください。</p>
+                                    
+                                    <!-- 時間枠ボタンのループ（List<TimeSlotDto>の中身） -->
+                                    <div class="time-box-list" th:if="${not #lists.isEmpty(scheduleEntry.value)}">
+                                        <a th:each="timeSlot : ${scheduleEntry.value}"
+                                           th:href="@{/reservations/seat(showtimeId=${timeSlot.showtimeId})}"
+                                           class="time-box" th:classappend="${timeSlot.statusCss}">
+                                            <span class="time" th:text="${timeSlot.timeRange}">10:00 ~ 12:00</span>
+                                            <span class="screen" th:text="${timeSlot.screenName}">Screen 1</span>
+                                            <span class="status-mark" th:text="${timeSlot.statusMark}">〇</span>
+                                        </a>
+                                    </div>
+                                    
+                                    <!-- スケジュールがない場合のメッセージ -->
+                                    <div class="time-box-list empty-message" th:if="${#lists.isEmpty(scheduleEntry.value)}">
                                         <p>この日の上映スケジュールはありません。</p>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                         <!-- アコーディオンここまで -->
                         
                     </div>
                     
-                    <!-- 劇場が0件の場合のメッセージ -->
                     <div th:if="${#lists.isEmpty(areaEntry.value)}" class="theater-item empty-message">
                         <span class="theater-name">このエリアでの上映スケジュールは現在ありません。</span>
                     </div>
@@ -155,11 +147,10 @@
     </div>
 
     <!-- ▼ ページトップへ戻るボタン ▼ -->
-    <!-- スクロール検知やクリック処理は完全にJSファイル側で制御します -->
     <button id="scrollTopBtn" class="scroll-top-btn" aria-label="ページトップへ戻る">▲</button>
 
     <!-- JavaScript処理（キャッシュ対策パラメータ） -->
-    <script th:src="@{/js/movie-detail.js?v=7}"></script>
+    <script th:src="@{/js/movie-detail.js?v=8}"></script>
     
 </body>
 </html>
