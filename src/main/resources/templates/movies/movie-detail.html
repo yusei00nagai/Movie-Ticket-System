@@ -90,29 +90,36 @@
                             <!-- タイムテーブル領域 -->
                             <div class="timetable-wrapper">
                                 
-                                <!-- 日付ごとのスケジュール枠のループ -->
-                                <div th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
-                                     th:id="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}"
-                                     th:classappend="${dateStat.first} ? 'timetable-panel active' : 'timetable-panel'">
-                                     
-                                    <p class="timetable-note" th:if="${not #lists.isEmpty(scheduleEntry.value)}">※座席を選択するには時間枠をクリックしてください。</p>
-                                    
-                                    <!-- 時間枠ボタンのループ（List<TimeSlotDto>の中身） -->
-                                    <div class="time-box-list" th:if="${not #lists.isEmpty(scheduleEntry.value)}">
-                                        <a th:each="timeSlot : ${scheduleEntry.value}"
-                                           th:href="@{/reservations/seat(showtimeId=${timeSlot.showtimeId})}"
-                                           class="time-box" th:classappend="${timeSlot.statusCss}">
-                                            <span class="time" th:text="${timeSlot.timeRange}">10:00 ~ 12:00</span>
-                                            <span class="screen" th:text="${timeSlot.screenName}">Screen 1</span>
-                                            <span class="status-mark" th:text="${timeSlot.statusMark}">〇</span>
-                                        </a>
-                                    </div>
-                                    
-                                    <!-- スケジュールがない場合のメッセージ -->
-                                    <div class="time-box-list empty-message" th:if="${#lists.isEmpty(scheduleEntry.value)}">
-                                        <p>この日の上映スケジュールはありません。</p>
-                                    </div>
-                                </div>
+								<!-- 日付ごとのスケジュール枠のループ -->
+								<div th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
+								     th:id="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}"
+								     th:classappend="${dateStat.first} ? 'timetable-panel active' : 'timetable-panel'">
+
+								    <!-- ★スクリーン名でグループ化するループ -->
+								    <div th:each="screenEntry : ${scheduleEntry.value}" class="screen-group">
+								        
+								        <h4 class="screen-title" th:text="${screenEntry.key}">SCREEN1</h4>
+								        
+								        <p class="timetable-note">※座席を選択するには時間枠をクリックしてください。</p>
+								        
+								        <div class="time-box-list">
+								            <a th:each="timeSlot : ${screenEntry.value}"
+								               th:href="@{/reservations/seat(showtimeId=${timeSlot.showtimeId})}"
+								               class="time-box" th:classappend="${timeSlot.statusCss}">
+								                <span class="time" th:text="${timeSlot.timeRange}">10:00～12:00</span>
+								                
+								                <span class="status-mark" th:text="${timeSlot.statusMark}">〇</span>
+								            </a>
+								        </div>
+								    </div>
+
+								    <!-- スケジュールがない場合 -->
+								    <div class="time-box-list empty-message" 
+								         th:if="${#maps.isEmpty(scheduleEntry.value)}">
+								        <p>この日の上映スケジュールはありません。</p>
+								    </div>
+
+								</div>
 
                             </div>
                         </div>

@@ -11,7 +11,7 @@ import com.example.movieticket.entity.Showtime;
 public interface ShowtimeRepository extends JpaRepository<Showtime,Long > {
 	
 	//映画詳細画面で、その映画の全スケジュールを取得
-	List<Showtime> findByMovieId(Long movieId);
+	List<Showtime> findByMovieIdOrderByScreenTheaterIdAscStartTimeAsc(Long movieId);
 	
 	//劇場詳細画面で、その劇場の上映スケジュールをスクリーン越しに取得
 	List<Showtime> findByScreenTheaterId(Long theaterId);
