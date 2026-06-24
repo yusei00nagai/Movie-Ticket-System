@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${movie.title}">映画詳細</title>
+    <link rel="stylesheet" th:href="@{/css/user-layout.css}">
+    <link rel="stylesheet" th:href="@{/css/movies.css}">
+    <link rel="stylesheet" th:href="@{/css/movie-detail.css}">
+</head>
+<body>
+    
+    <div th:replace="~{layout/user-layout :: header('movie-detail')}"></div>
+    
+    <main>
+        <section class="movieSection">
+            <!-- ▼ 1. 上部：映画詳細情報（2カラム） ▼ -->
+            <div class="movie-detail-container">
+                
+                <!-- 左カラム：メイン画像とタイトル -->
+                <div class="left-col">
+                    <img th:src="@{/images/600x380.png}" alt="メイン画像" class="main-img">
+                    <h2 class="movie-title" th:text="${movie.title}">映画タイトル</h2>
+                </div>
+                
+                <!-- 右カラム：サブ画像とあらすじ・情報 -->
+                <div class="right-col">
+                    <div class="sub-img-row">
+                        <img th:each="i : ${#numbers.sequence(1, 4)}"
+                             th:src="@{/images/600x380.png}" 
+                             alt="サブ画像"
+                             class="sub-img">
+                    </div>
+                    
+                    <p class="description" th:text="${movie.description}">
+                        映画のあらすじがここに入ります。
+                    </p>
+                    
+                    <p class="movie-info-bar">
+                        上映時間：<span th:text="${movie.duration}">120</span>分
+                    </p>
+                </div>
+            </div>
+
+            <!-- ▼ 2. 下部：上映スケジュール（エリア別タブ＆劇場リスト） ▼ -->
+            <div class="schedule-container">
+                
+                <h3>上映スケジュール</h3>
+                
+                <!-- ▼ エリア切り替えタブ ▼ -->
+                <ul class="area-tabs" th:if="${theaterMap != null}">
+                    <li th:each="areaEntry, stat : ${theaterMap}"
+                        th:classappend="${stat.first} ? 'active area-tab' : 'area-tab'"
+                        th:data-area-id="'area-' + ${stat.index}"
+                        th:text="${areaEntry.key}">エリア名</li>
+                </ul>
+
+                <!-- ▼ 各エリアの劇場リスト ▼ -->
+                <div th:each="areaEntry, stat : ${theaterMap}"
+                     th:id="'area-' + ${stat.index}"
+                     class="theater-list-container"
+                     th:classappend="${stat.first} ? 'active' : ''">
+                    
+                    <!-- そのエリアに属する劇場をループで出力 -->
+                    <div th:each="theater : ${areaEntry.value}" class="theater-item">
+                        
+                        <div class="pref-name" th:text="'[' + ${theater.location} + ']'">[都道府県]</div>
+                        
+                        <!-- 劇場名と矢印 -->
+                        <div class="theater-name-row">
+                            <span class="theater-name" th:text="${theater.theaterName}">劇場名</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        
+                        <!-- ▼ アコーディオンで開くカレンダー部分 ▼ -->
+                        <div class="accordion-content">
+                            
+                            <!-- 日付タブのループ -->
+                            <ul class="date-tabs">
+                                <!-- theater.dailySchedules (Map) をループして日付タブを作る -->
+                                <li th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
+                                    th:classappend="${dateStat.first} ? 'date-tab active' : 'date-tab'"
+                                    th:data-target-date="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}">
+                                    
+                                    <!-- LocalDate を Thymeleaf の機能で「M/d」形式に変換 -->
+                                    <span class="month-day" th:text="${#temporals.format(scheduleEntry.key, 'M/d')}">6/19</span>
+                                    <span class="day-of-week" th:text="${#temporals.format(scheduleEntry.key, '(E)', new java.util.Locale('ja', 'JP'))}">(金)</span>
+                                </li>
+                            </ul>
+
+                            <!-- タイムテーブル領域 -->
+                            <div class="timetable-wrapper">
+                                
+								<!-- 日付ごとのスケジュール枠のループ -->
+								<div th:each="scheduleEntry, dateStat : ${theater.dailySchedules}"
+								     th:id="'date-' + ${dateStat.index} + '-' + ${theater.theaterId}"
+								     th:classappend="${dateStat.first} ? 'timetable-panel active' : 'timetable-panel'">
+
+								    <!-- ★スクリーン名でグループ化するループ -->
+								    <div th:each="screenEntry : ${scheduleEntry.value}" class="screen-group">
+								        
+								        <h4 class="screen-title" th:text="${screenEntry.key}">SCREEN1</h4>
+								        
+								        <p class="timetable-note">※座席を選択するには時間枠をクリックしてください。</p>
+								        
+								        <div class="time-box-list">
+								            <a th:each="timeSlot : ${screenEntry.value}"
+								               th:href="@{/reservations/seat(showtimeId=${timeSlot.showtimeId})}"
+								               class="time-box" th:classappend="${timeSlot.statusCss}">
+								                <span class="time" th:text="${timeSlot.timeRange}">10:00～12:00</span>
+								                
+								                <span class="status-mark" th:text="${timeSlot.statusMark}">〇</span>
+								            </a>
+								        </div>
+								    </div>
+
+								    <!-- スケジュールがない場合 -->
+								    <div class="time-box-list empty-message" 
+								         th:if="${#maps.isEmpty(scheduleEntry.value)}">
+								        <p>この日の上映スケジュールはありません。</p>
+								    </div>
+
+								</div>
+
+                            </div>
+                        </div>
+                        <!-- アコーディオンここまで -->
+                        
+                    </div>
+                    
+                    <div th:if="${#lists.isEmpty(areaEntry.value)}" class="theater-item empty-message">
+                        <span class="theater-name">このエリアでの上映スケジュールは現在ありません。</span>
+                    </div>
+                    
+                </div>
+
+                <!-- ▼ 3. ボタンエリア ▼ -->
+                <div class="btnArea">
+                    <div class="nowMovieArea">
+                        <a href="/movies">上映中作品一覧はこちら</a>
+                    </div>
+                    <div class="upcomingMovieArea">
+                        <a href="/movies?status=upcoming">公開予定作品一覧はこちら</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ▼ 画像拡大用のモーダル領域 ▼ -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="expandedImg">
+    </div>
+
+    <!-- ▼ ページトップへ戻るボタン ▼ -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="ページトップへ戻る">▲</button>
+
+    <!-- JavaScript処理（キャッシュ対策パラメータ） -->
+    <script th:src="@{/js/movie-detail.js?v=8}"></script>
+    
+</body>
+</html>

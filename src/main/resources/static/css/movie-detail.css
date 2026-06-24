@@ -1,0 +1,532 @@
+/* =========================================
+   映画詳細画面 (movie-detail.html) 用スタイル
+========================================= */
+
+/* 1. 画面全体を白っぽい色に */
+body {
+    background-color: #f4f4f4;
+    margin: 0; /* JSでoverflowを操作する際のズレ防止 */
+}
+
+/* 2. 映画詳細全体を囲むセクション（スケジュールエリアの背景は透明のまま維持） */
+.movieSection {
+    margin: 20px 0 50px 0; 
+    padding-top: 20px;
+    padding-bottom: 40px;
+    border-radius: 12px;
+}
+
+/* 3. 全体を包むカード（黒背景 ＋ CSSの影を応用したダークグレーの2層目 ＋ 深い影） */
+.movie-detail-container {
+    max-width: 1300px;
+    margin: 40px auto 60px auto; 
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    background-color: #222222; 
+    border: 1px solid #333333; 
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 
+        0 0 0 25px #1a1a1a,             
+        0 15px 40px 25px rgba(0,0,0,0.6); 
+}
+
+/* 左カラム (メイン画像・タイトル) */
+.left-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.left-col .main-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+}
+
+.movie-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff; 
+    margin: 0;
+    border-bottom: 3px solid #b71c1c;
+    padding-bottom: 15px;
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+/* 右カラム (サブ画像・詳細・情報) */
+.right-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.sub-img-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px;
+    margin-top: 15px; 
+    margin-bottom: 30px;
+}
+
+.sub-img-row img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease; 
+    cursor: pointer; 
+}
+
+.sub-img-row img:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+
+.description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #eeeeee; 
+    margin: 0 0 30px 0;
+    flex-grow: 1; 
+    white-space: pre-wrap; 
+}
+
+.movie-info-bar {
+    background-color: #111111; 
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 5px solid #b71c1c;
+    font-size: 1rem;
+    color: #eeeeee;
+    font-weight: bold;
+    margin: 0;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+}
+
+.movie-info-bar span {
+    color: #ffffff; 
+    font-weight: 900;
+}
+
+/* =========================================
+   上映スケジュールエリア
+========================================= */
+.schedule-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+main h3 {
+    text-align: left;
+    border-left: 10px solid #b71c1c;
+    padding-left: 10px;
+    color: #333333; 
+    margin-top: 60px; 
+    margin-bottom: 20px;
+}
+
+/* エリア別タブ */
+.area-tabs {
+    display: flex; 
+    list-style: none; 
+    padding: 0;
+    margin: 0;
+    background-color: #222222; 
+    border-radius: 8px 8px 0 0; 
+}
+
+.area-tabs li {
+    flex: 1; 
+    text-align: center;
+    padding: 15px 0;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border-right: 1px solid #444444; 
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.area-tabs li:last-child {
+    border-right: none;
+}
+
+.area-tabs li:hover {
+    background-color: #444444;
+}
+
+.area-tabs li.active {
+    background-color: #f8f9fa; 
+    color: #000000;
+    border-radius: 8px 8px 0 0; 
+}
+
+/* 劇場リストエリア */
+.theater-list-container {
+    background-color: #f8f9fa; 
+    padding: 0 30px;
+    display: none; 
+    border-radius: 0 0 8px 8px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    
+    /* アコーディオンが展開しやすいように高さを広げました */
+    max-height: 3000px; 
+    overflow-y: auto;  
+}
+
+.theater-list-container.active {
+    display: block;
+}
+
+/* 劇場ごとの行 */
+.theater-item {
+    border-bottom: 1px solid #dddddd;
+    padding: 20px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.2s;
+}
+
+.theater-item:last-child {
+    border-bottom: none;
+}
+
+.theater-item:hover {
+    background-color: #e9ecef;
+}
+
+.theater-item .pref-name {
+    font-size: 0.9rem;
+    color: #555555;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.theater-item .theater-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theater-item .theater-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #111111;
+}
+
+.screen-group {
+    margin-bottom: 20px;
+    border-left: 3px solid #b71c1c;
+    padding-left: 15px;
+}
+
+.screen-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #555;
+    margin: 0 0 10px 0;
+}
+
+
+/* =========================================
+   ▼アコーディオン（カレンダー展開）用CSS▼
+========================================= */
+
+/* 矢印アイコンのアニメーション */
+.theater-item .arrow {
+    color: #888888;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: transform 0.3s ease; 
+}
+
+/* アコーディオンが開いている時の矢印の向き */
+.theater-item.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* アコーディオンの中身（デフォルトは高さを0にして隠す） */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    background-color: #fafafa;
+    cursor: default; 
+}
+
+/* アコーディオンが開いている時 */
+.theater-item.open .accordion-content {
+    max-height: 1000px; 
+    border-top: 1px dashed #ddd;
+    margin-top: 10px;
+}
+
+/* カレンダー（日付タブ） */
+.date-tabs {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto; 
+    background-color: #fff;
+}
+
+.date-tabs li {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+    padding: 12px 5px;
+    cursor: pointer;
+    border-right: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    color: #555;
+    transition: background-color 0.2s;
+}
+
+.date-tabs li:hover {
+    background-color: #f8f9fa;
+}
+
+/* アクティブな日付タブ */
+.date-tabs li.active {
+    background-color: #b71c1c;
+    color: #fff;
+    font-weight: bold;
+}
+
+.date-tabs .month-day {
+    font-size: 1.1rem;
+}
+.date-tabs .day-of-week {
+    font-size: 0.8rem;
+}
+
+/* タイムテーブル */
+.timetable-wrapper {
+    padding: 20px;
+}
+
+.timetable-panel {
+    display: none;
+}
+
+.timetable-panel.active {
+    display: block;
+    animation: smoothFade 0.3s;
+}
+
+.timetable-note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* 上映時間のボタンリスト */
+.time-box-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    padding: 15px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    text-decoration: none; 
+    color: #333;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 空席あり・残りわずか のホバー時 */
+.time-box.ok:hover, .time-box.few:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(183, 28, 28, 0.2);
+    border-color: #b71c1c;
+}
+
+/* 満席の場合はグレーアウトして押せなくする */
+.time-box.full {
+    background-color: #eee;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.time-box .time {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.time-box .screen {
+    font-size: 0.8rem;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+/* 状況マーク（〇、△、×） */
+.status-mark {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+.time-box.ok .status-mark { color: #28a745; } 
+.time-box.few .status-mark { color: #ffc107; } 
+.time-box.full .status-mark { color: #dc3545; } 
+
+.empty-message {
+    text-align: center;
+    color: #888888;
+    padding: 40px 0;
+    cursor: default;
+}
+
+.empty-message:hover {
+    background-color: transparent;
+}
+
+
+/* =========================================
+   ボタンエリア
+========================================= */
+.btnArea {
+    margin: 80px 0 40px 0;
+    display: flex;           
+    justify-content: center; 
+    gap: 30px;               
+    flex-wrap: wrap;         
+}
+
+.nowMovieArea, .upcomingMovieArea {
+    margin: 0;
+    padding: 0;
+}
+
+.btnArea a {
+    display: inline-block; 
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #b71c1c; 
+    text-decoration: none;
+    padding: 18px 50px;
+    border-radius: 50px; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.4); 
+}
+
+.btnArea a:hover {
+    background-color: #d32f2f; 
+    transform: translateY(-4px); 
+    box-shadow: 0 8px 25px rgba(183, 28, 28, 0.6); 
+}
+
+.btnArea a:active {
+    transform: translateY(0); 
+    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.4); 
+}
+
+/* =========================================
+   画像拡大用モーダル
+========================================= */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); 
+    justify-content: center;
+    align-items: center;
+    animation: smoothFade 0.4s ease forwards;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90vh; 
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: smoothFade 0.4s ease forwards; 
+}
+
+@keyframes smoothFade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #b71c1c; 
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* =========================================
+   ページトップへ戻るボタン ★今回追加
+========================================= */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background-color: #b71c1c; /* シネマレッド */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%; /* 完全な丸 */
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    
+    /* 初期状態は非表示（透明で少し下にずらしておく） */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    
+    /* 現れる際のアニメーション */
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+    z-index: 999; /* モーダルの下、ヘッダー等の上 */
+}
+
+/* JSでクラスが付与された時の表示状態 */
+.scroll-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* マウスホバーで少し拡大して色を明るく */
+.scroll-top-btn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.1) translateY(0);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}

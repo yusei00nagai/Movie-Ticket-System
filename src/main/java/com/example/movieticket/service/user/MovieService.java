@@ -2,6 +2,7 @@ package com.example.movieticket.service.user;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -44,5 +45,14 @@ public class MovieService {
 		
 		//全ての映画を取得
 		return movieRepository.findAllByOrderByReleaseDateDesc();
+	}
+	
+	// ==========================================
+	// ④ 映画取得メソッド（ID）
+	// ==========================================
+	public Optional<Movie> getMovieById(Long id) {
+		
+		//JpaRepositoryからID検索メソッドを呼び出す
+		return movieRepository.findById(id);
 	}
 }

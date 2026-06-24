@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>映画一覧</title>
+	<link rel="stylesheet" th:href="@{/css/user-layout.css}">
+	<link rel="stylesheet" th:href="@{/css/movies.css}">
+</head>
+<body>
+    
+    <div th:replace="~{layout/user-layout :: header('movies')}"></div>
+    
+    <main>
+        <h1>映画一覧</h1>
+        
+        <div class="movie-list">
+            <a th:href="@{/movies/{id}(id=${movie.id})}" th:each="movie : ${movies}" class="movie-card">
+                <img th:src="@{/images/600x380.png}" alt="映画画像">
+                <h2 th:text="${movie.title}">ダミータイトル</h2>
+                <p>公開日: <span th:text="${movie.releaseDate}">2000/01/01</span></p>
+            </a>
+        </div>
+    </main>
+    
+</body>
+</html>

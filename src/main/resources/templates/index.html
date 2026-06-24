@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TOP | MovieTicket</title>
+    <!-- 共通のCSSを読み込み -->
+    <link rel="stylesheet" th:href="@{/css/user-layout.css}">
+    <style>
+        /* TOPページ専用の簡単なスタイル（ヘッダー分の余白確保） */
+        body {
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        main {
+            padding-top: 120px; /* ヘッダーが被らないように */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 共通ヘッダーを読み込み -->
+    <div th:replace="~{layout/user-layout :: header('top')}"></div>
+
+    <!-- コンテンツ部分 -->
+    <main>
+        <h2>TOPページ</h2>
+    </main>
+
+</body>
+</html>

@@ -1,26 +1,27 @@
 @charset "UTF-8";
 
-/* ベース設定：シネマティックなダークネイビー */
+/* ベース設定：映画一覧画面に合わせた明るい背景 */
 body {
     margin: 0;
-    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-    background-color: #0f172a;
-    color: #f8fafc;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f4f4f4; /* movies.cssと統一 */
+    color: #333; /* 文字色を濃いグレーに変更 */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
-/* 認証画面の中央カード（少し浮き上がらせる） */
+/* 認証画面のカード */
 .auth-container {
-    background: #1e293b;
+    background: #ffffff; /* 白背景に変更 */
     padding: 3rem;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* 影を軽めに */
     width: 100%;
     max-width: 400px;
     text-align: center;
+    border: 1px solid #EAEAEA; /* 一覧画面のヘッダーとトーンを合わせる */
 }
 
 /* 見出し */
@@ -29,14 +30,7 @@ body {
     margin-bottom: 2rem;
     font-size: 1.8rem;
     font-weight: 700;
-    letter-spacing: 2px;
-    color: #e2e8f0;
-}
-
-/* フォームの各項目 */
-form div {
-    margin-bottom: 1.5rem;
-    text-align: left;
+    color: #333;
 }
 
 /* ラベル */
@@ -44,78 +38,63 @@ label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: #666;
 }
 
-/* 入力欄（ダーク背景に馴染ませる） */
+/* 入力欄 */
 input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 0.8rem 1rem;
     border-radius: 8px;
-    border: 1px solid #334155;
-    background-color: #0f172a;
-    color: #f8fafc;
+    border: 1px solid #ddd; /* 枠線を薄く */
+    background-color: #fff;
+    color: #333;
     font-size: 1rem;
-    box-sizing: border-box; /* 枠線を幅に含める */
+    box-sizing: border-box;
     transition: all 0.3s ease;
 }
 
-/* 入力欄のフォーカス時（ネオンブルーに発光） */
+/* フォーカス時の色を青系に調整 */
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
-    border-color: #3b82f6;
+    border-color: #007BFF;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
-/* イカしたグラデーションボタン */
+/* ボタン：一覧画面のアクティブタブの色と統一 */
 button[type="submit"] {
     width: 100%;
     padding: 1rem;
     margin-top: 1rem;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: #007BFF; /* シンプルな青に変更 */
     color: white;
     font-size: 1rem;
     font-weight: bold;
-    letter-spacing: 1px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.3s ease;
 }
 
-/* ボタンをホバーした時に少し浮き上がるエフェクト */
 button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+    background: #0056b3;
 }
 
 /* リンク */
-.auth-container p {
-    margin-top: 2rem;
-    margin-bottom: 0;
-}
-
 .auth-container a {
-    color: #60a5fa;
+    color: #007BFF;
     text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
 }
 
-.auth-container a:hover {
-    color: #93c5fd;
-    text-decoration: underline;
-}
-
-/* エラー・成功メッセージ（ネオンカラーで強調） */
+/* エラー・成功メッセージ */
 .message-error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid #ef4444;
-    color: #f87171;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
     padding: 0.8rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
@@ -123,9 +102,9 @@ button[type="submit"]:hover {
 }
 
 .message-success {
-    background-color: rgba(34, 197, 94, 0.1);
-    border: 1px solid #22c55e;
-    color: #4ade80;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
     padding: 0.8rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
