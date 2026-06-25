@@ -90,7 +90,9 @@ public class ShowtimeService {
 		
 		//今日の日付を取得
 		//LocalDate today = LocalDate.now();
-		LocalDate today = LocalDate.of(2026, 6, 23); // デバッグ用
+		// デバッグ用
+		LocalDate today = LocalDate.of(2026, 6, 23);
+		
 		//今日から6日後の日付
 		LocalDate endDay = today.plusDays(6);
 		
