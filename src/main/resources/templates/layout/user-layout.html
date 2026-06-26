@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- ▼ Spring Securityのタグ(sec)を使えるように名前空間を追加 ▼ -->
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +6,7 @@
 </head>
 <body>
 
-    <!-- ▼ 引数として activeTab （現在の画面名）を受け取るように変更 ▼ -->
+    <!-- 引数として activeTab （現在の画面名）を受け取る -->
     <div th:fragment="header(activeTab)">
         
         <!-- ヘッダー本体 -->
@@ -22,7 +21,7 @@
                 
                 <!-- 2. ロゴ（クリックで TOPページ '/' へ遷移） -->
                 <a href="/" class="site-logo">
-                    <span class="logo-icon">🎬</span>
+                    <span class="logo-icon">&#127916;</span>
                     <span class="logo-text">MovieTicket</span>
                 </a>
             </div>

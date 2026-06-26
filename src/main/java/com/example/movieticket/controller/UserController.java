@@ -8,7 +8,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.movieticket.service.user.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class UserController {
 	
 	private final UserService userService;
@@ -22,6 +25,7 @@ public class UserController {
     // ==========================================
 	@GetMapping("/login")
 	public String showLoginForm() {
+		log.info("画面遷移: ログイン画面(auth/login)へ遷移します");
 		return "auth/login";
 	}
 	
@@ -30,6 +34,7 @@ public class UserController {
     // ==========================================
 	@GetMapping("/register")
 	public String showRegisterForm() {
+		log.info("画面遷移: 新規登録画面(auth/register)へ遷移します");
 		return "auth/register";
 	}
 	
