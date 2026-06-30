@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- ▼ Spring Securityのタグ(sec)を使えるように名前空間を追加 ▼ -->
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +6,7 @@
 </head>
 <body>
 
-    <!-- ▼ 引数として activeTab （現在の画面名）を受け取るように変更 ▼ -->
+    <!-- 引数として activeTab （現在の画面名）を受け取る -->
     <div th:fragment="header(activeTab)">
         
         <!-- ヘッダー本体 -->
@@ -22,7 +21,7 @@
                 
                 <!-- 2. ロゴ（クリックで TOPページ '/' へ遷移） -->
                 <a href="/" class="site-logo">
-                    <span class="logo-icon">🎬</span>
+                    <span class="logo-icon">&#127916;</span>
                     <span class="logo-text">MovieTicket</span>
                 </a>
             </div>
@@ -72,11 +71,12 @@
                 <button class="close-menu" id="closeMenuBtn">&times;</button>
             </div>
             <ul class="side-menu-list">
-                <li><a href="/">TOPページ</a></li> <!-- ★ここに追加しました -->
-                <li><a href="/movies">上映中作品一覧</a></li>
+                <li><a href="/">TOPページ</a></li>
+                <li sec:authorize="isAuthenticated()"><a href="/mypage">マイページ（購入履歴）</a></li>
+                <li sec:authorize="!isAuthenticated()"><a href="/login">ログイン</a></li>
+                <li><a href="/movies">上映中作品</a></li>
                 <li><a href="/movies?status=upcoming">公開予定作品</a></li>
                 <li><a href="/theaters">劇場一覧</a></li>
-                <li><a href="/mypage">マイページ（購入履歴）</a></li>
             </ul>
         </div>
 

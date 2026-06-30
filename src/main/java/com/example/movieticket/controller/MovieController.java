@@ -15,7 +15,10 @@ import com.example.movieticket.entity.Movie;
 import com.example.movieticket.service.user.MovieService;
 import com.example.movieticket.service.user.ShowtimeService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class MovieController {
 	
 	private final MovieService movieService;
@@ -33,6 +36,8 @@ public class MovieController {
 	@GetMapping("/movies")
 	public String showMovieList(
 		@RequestParam(required = false) String status, Model model) {
+		
+		log.info("画面遷移: 映画一覧画面の表示処理を開始します [status={}]", status);
 		
 		//映画リストを入れる空箱を用意
 		List<Movie> movies;
@@ -52,6 +57,7 @@ public class MovieController {
 		//ステータスをmodelにセット
 		model.addAttribute("status", status);
 		
+		log.info("画面遷移: 映画一覧画面(movies/movies)へ遷移します");
 		return "movies/movies";
 	}
 	
@@ -61,10 +67,12 @@ public class MovieController {
 	@GetMapping("/movies/{id}")
 	public String showMovieDetail(@PathVariable("id") Long id, Model model) {
 		
+		log.info("画面遷移: 映画詳細画面の表示処理を開始します [映画ID={}]", id);
+		
 	    //ServiceからIDをもとに映画を1件取得
 	    Optional<Movie> movieOpt = movieService.getMovieById(id);
 	    
-	    //存在チェック
+	    // 存在チェック：ヌルポ回避
 	    if(movieOpt.isPresent()) {
 	    	
 	        // 中身を取り出して "movie" という名前で渡す
@@ -76,8 +84,13 @@ public class MovieController {
 	        //劇場情報をmodeにセット
 	        model.addAttribute("theaterMap", theaterMap);
 	        
+	        log.info("画面遷移: 映画詳細画面(movies/movie-detail)へ遷移します [映画名={}]", movieOpt.get().getTitle());
+	        
 	        return "movies/movie-detail";
-	    } else {	
+	    } else {
+	    	
+	    	log.warn("画面遷移: 指定された映画が見つからないため、一覧へリダイレクトします [映画ID={}]", id);
+	    	
 	        //映画が見つからない場合、一覧画面へリダイレクト
 	        return "redirect:/movies";
 	    }
