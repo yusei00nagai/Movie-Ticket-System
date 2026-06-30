@@ -29,7 +29,7 @@ public class SecurityConfig {
 			// ① アクセス制限のルール
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(
-					"/", // ★ここを追加：未ログインでもTOPページを見られるようにする
+					"/", // 未ログインでもTOPページを見られるようにする
 					"/login", "/register", "/register/confirm", 
 					"/css/**", "/js/**", "/images/**", // 静的リソース
 					"/movies/**", "/theaters/**", "/showtimes/**", // 閲覧系の画面
@@ -42,7 +42,7 @@ public class SecurityConfig {
 				.loginPage("/login") // ログイン画面のURL
 				.usernameParameter("email") // ログイン時、IDの代わりにメアドを使う設定
 				.passwordParameter("password") // パスワードの入力欄の名前
-				.defaultSuccessUrl("/", true) // ログインが成功したら自動的にTOPページへ飛ばす
+				.defaultSuccessUrl("/", false) // ログインが成功したら自動的にTOPページへ飛ばす
 				.permitAll()
 			)
 			// ③ ログアウトに関する設定
