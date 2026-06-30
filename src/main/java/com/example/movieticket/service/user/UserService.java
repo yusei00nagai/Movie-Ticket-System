@@ -1,12 +1,12 @@
 package com.example.movieticket.service.user;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.movieticket.entity.User;
 import com.example.movieticket.repository.UserRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -58,9 +58,4 @@ public class UserService {
 		
 		userRepository.save(newUser);
 	}
-	
-	// ==========================================
-	// ③ ログインメソッド
-	// ==========================================
-	//Spring Securityにて行う
 }

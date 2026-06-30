@@ -72,7 +72,7 @@ public class MovieController {
 	    //ServiceからIDをもとに映画を1件取得
 	    Optional<Movie> movieOpt = movieService.getMovieById(id);
 	    
-	    //存在チェック
+	    //存在チェック：ヌルポ回避
 	    if(movieOpt.isPresent()) {
 	    	
 	        // 中身を取り出して "movie" という名前で渡す

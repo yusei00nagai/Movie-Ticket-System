@@ -101,6 +101,7 @@ public class ShowtimeService {
 		
 		for(Showtime showtime : showtimes) {
 			
+			//日付＋時間の型を日付のみに変換
 			LocalDate targetDate = showtime.getStartTime().toLocalDate();
 			
 			//期間外であれば、スキップ
@@ -150,9 +151,11 @@ public class ShowtimeService {
 			//showtimeIdをセット
 			timeSlot.setShowtimeId(showtime.getId());
 			
-			//timeRangeをセット
+			//時間形式を成形し、timeRangeをセット
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 			timeSlot.setTimeRange(showtime.getStartTime().format(timeFormatter) + "～" + showtime.getEndTime().format(timeFormatter));
+			
+			//スクリーン名をセット
 			timeSlot.setScreenName(showtime.getScreen().getName());
 			
 			//statusMark, statusCssをセット 残席情報は一旦仮置き
@@ -186,11 +189,10 @@ public class ShowtimeService {
 				theaterList.add(targetTheaterDto);
 			}
 			
-			
 			//５． 劇場箱の日付カレンダーを開き、手順１で作成した時間枠箱を追加
 			//対象の日付Mapがなければ作成
 			if (!targetTheaterDto.getDailySchedules().containsKey(targetDate)) {
-				// ★ スクリーン名を数値順にソートするComparatorを追加
+				// スクリーン名を数値順にソートするComparatorを追加
 				targetTheaterDto.getDailySchedules().put(targetDate, new TreeMap<>(Comparator.comparingInt(s -> {
 					// "SCREEN1" → 1, "SCREEN10" → 10 のように数値部分だけ抽出
 					String num = s.replaceAll("[^0-9]", "");
